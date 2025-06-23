@@ -10,7 +10,7 @@ function App() {
   return (
     <BrowserRouter>
       <header className="header">
-        <img src="/logo.svg" alt="logo" className="logo" />
+        <img src="/logo.png" alt="logo" className="logo" />
         <h1>Atlas du Royaume</h1>
       </header>
       <div className="content">
