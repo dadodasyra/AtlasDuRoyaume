@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { fetchTroops, createGroup, joinGroup, fetchGroups, leaveGroup } from '../logic/data';
 
+const capitalize = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+
 export default function SettingsView() {
   const [nickname, setNickname] = useState(localStorage.getItem('nickname') || '');
   const [troops, setTroops] = useState([]);
@@ -8,29 +10,43 @@ export default function SettingsView() {
   const [groups, setGroups] = useState([]);
   const [newGroup, setNewGroup] = useState('');
   const [joinCode, setJoinCode] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetchTroops().then(setTroops);
     if (nickname) fetchGroups(nickname).then(setGroups);
-  }, [nickname]);
+  }, []);
 
   const saveProfile = () => {
-    localStorage.setItem('nickname', nickname);
+    const capped = capitalize(nickname);
+    setNickname(capped);
+    localStorage.setItem('nickname', capped);
     localStorage.setItem('troopId', troopId);
+    if (capped) {
+      fetchGroups(capped).then(setGroups);
+    }
   };
 
   const createGroupHandler = async () => {
-    if (!newGroup || !nickname) return;
-    const g = await createGroup(newGroup, nickname);
+    if (!newGroup || !nickname) {
+      setError('Nom manquant');
+      return;
+    }
+    const g = await createGroup(capitalize(newGroup), nickname);
     setGroups([...groups, g]);
     setNewGroup('');
+    setError('');
   };
 
   const joinGroupHandler = async () => {
-    if (!joinCode || !nickname) return;
+    if (!joinCode || !nickname) {
+      setError('Code invalide');
+      return;
+    }
     await joinGroup(joinCode, nickname);
     setJoinCode('');
     fetchGroups(nickname).then(setGroups);
+    setError('');
   };
 
   const leave = async (code) => {
@@ -51,12 +67,13 @@ export default function SettingsView() {
       <button onClick={saveProfile}>Enregistrer</button>
 
       <h2>Groupes</h2>
+      {error && <p className="error">{error}</p>}
       <div className="group-actions">
-        <input placeholder="Nom du groupe" value={newGroup} onChange={(e) => setNewGroup(e.target.value)} />
+        <input placeholder="Nom du groupe" value={newGroup} onChange={(e) => setNewGroup(capitalize(e.target.value))} />
         <button onClick={createGroupHandler}>Créer</button>
       </div>
       <div className="group-actions">
-        <input placeholder="Code" value={joinCode} onChange={(e) => setJoinCode(e.target.value)} />
+        <input placeholder="Code" value={joinCode} onChange={(e) => setJoinCode(e.target.value.toUpperCase())} />
         <button onClick={joinGroupHandler}>Rejoindre</button>
       </div>
       <ul>

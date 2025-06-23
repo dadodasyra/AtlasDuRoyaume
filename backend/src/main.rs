@@ -1,8 +1,25 @@
 use actix_web::{web, App, HttpServer, HttpResponse};
-use actix_cors::Cors;
-use rand::{distributions::Alphanumeric, Rng};
-use serde::{Serialize, Deserialize};
-use std::sync::Mutex;
+struct Feature {
+    id: u32,
+    name: String,
+    lat: f64,
+    lng: f64,
+    path: Option<Vec<(f64, f64)>>,
+}
+            features: vec![Feature { id: 1, name: "économat".into(), lat: 44.5955, lng: 5.01055, path: None }],
+            features: vec![Feature {
+                id: 2,
+                name: "camp".into(),
+                lat: 44.596,
+                lng: 5.011,
+                path: Some(vec![
+                    (44.596, 5.011),
+                    (44.596, 5.012),
+                    (44.5955, 5.012),
+                    (44.5955, 5.011),
+                ]),
+            }],
+            features: vec![Feature { id: 3, name: "infirmerie".into(), lat: 44.5958, lng: 5.0107, path: None }],
 use std::collections::HashMap;
 use lazy_static::lazy_static;
 

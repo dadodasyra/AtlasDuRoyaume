@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polygon } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useState, useRef } from 'react';
 import { getVersionedData } from '../logic/data';
@@ -46,21 +46,29 @@ export default function MapView() {
         <>
           <MapContainer
             center={center}
-            zoom={17}
-            style={{ height: '100vh' }}
+            zoom={18}
+            maxZoom={22}
+            style={{ height: '100%' }}
             whenCreated={(map) => (mapRef.current = map)}
             onmoveend={handleMove}
+            attributionControl={false}
           >
             <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
             {mapData.layers.map((l) =>
               visible[l.id]
                 ? l.features
                     .filter((f) => f.name.toLowerCase().includes(query.toLowerCase()))
-                    .map((f) => (
-                      <Marker key={f.id} position={[f.lat, f.lng]}>
-                        <Popup>{f.name}</Popup>
-                      </Marker>
-                    ))
+                    .map((f) =>
+                      f.path ? (
+                        <Polygon key={f.id} positions={f.path}>
+                          <Popup>{f.name}</Popup>
+                        </Polygon>
+                      ) : (
+                        <Marker key={f.id} position={[f.lat, f.lng]}>
+                          <Popup>{f.name}</Popup>
+                        </Marker>
+                      )
+                    )
                 : null
             )}
           </MapContainer>
