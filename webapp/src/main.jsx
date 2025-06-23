@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import MapView from './components/MapView.jsx';
 import SettingsView from './components/SettingsView.jsx';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
 import './App.css';
 
 function App() {
@@ -14,10 +15,12 @@ function App() {
           <Link to="/">Carte</Link> | <Link to="/settings">Param\u00E8tres</Link>
         </nav>
       </header>
-      <Routes>
-        <Route path="/" element={<MapView />} />
-        <Route path="/settings" element={<SettingsView />} />
-      </Routes>
+      <ErrorBoundary>
+        <Routes>
+          <Route path="/" element={<MapView />} />
+          <Route path="/settings" element={<SettingsView />} />
+        </Routes>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 }

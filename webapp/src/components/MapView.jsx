@@ -17,7 +17,7 @@ export default function MapView() {
 
   return (
     <div className="map-container">
-      {mapData && (
+      {mapData ? (
         <MapContainer center={position} zoom={15} style={{ height: '100vh' }}>
           <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" />
           {mapData.layers.map((l) =>
@@ -28,6 +28,8 @@ export default function MapView() {
             ))
           )}
         </MapContainer>
+      ) : (
+        <p>Chargement...</p>
       )}
     </div>
   );
