@@ -1,6 +1,7 @@
 use actix_web::{web, App, HttpServer, HttpResponse};
 use rand::{distributions::Alphanumeric, Rng};
 use serde::Serialize;
+use actix_cors::Cors;
 
 #[derive(Serialize)]
 struct Feature { id: u32, name: String, lat: f64, lng: f64 }
@@ -41,7 +42,13 @@ async fn create_code() -> HttpResponse {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
+        let cors = Cors::default()
+            .allow_any_origin()
+            .allow_any_method()
+            .allow_any_header();
+
         App::new()
+            .wrap(cors)
             .route("/map-data", web::get().to(map_data))
             .route("/troops", web::get().to(troops))
             .route("/group-code", web::post().to(create_code))
