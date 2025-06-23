@@ -1,0 +1,6 @@
+body,html,#root { margin:0; height:100%; }
+.header { background:#4b3b2b; color:#fff; padding:0.5rem; display:flex; justify-content:space-between; align-items:center; }
+.header h1 { font-size:1.2rem; margin:0; }
+nav a { color:#f0e6d2; margin-left:1rem; text-decoration:none; }
+.settings { padding:1rem; }
+.map-container { height:100%; }
