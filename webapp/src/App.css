@@ -1,16 +1,19 @@
-body,html,#root { margin:0; height:100%; }
+body,html,#root { margin:0; height:100%; display:flex; flex-direction:column; }
 .header { background:#4b3b2b; color:#fff; padding:0.5rem; text-align:center; display:flex; align-items:center; justify-content:center; gap:0.5rem; }
 .header h1 { font-size:1.2rem; margin:0; }
 .logo { width:24px; height:24px; }
 .nav-bottom { position:fixed; bottom:0; left:0; right:0; background:#4b3b2b; display:flex; justify-content:space-around; padding:0.5rem 0; }
 .nav-bottom a { color:#f0e6d2; text-decoration:none; font-size:1rem; }
-.content { padding-bottom:3rem; }
+.content { flex:1; padding-bottom:3rem; }
 .error { color: red; }
-.settings { padding:1rem; }
+.settings { padding:1rem; max-width:600px; margin:0 auto; }
+.settings input,.settings select { width:100%; margin-bottom:0.5rem; }
+.settings button { margin-bottom:0.5rem; }
 .group-actions { margin-bottom:0.5rem; display:flex; gap:0.5rem; }
-.map-container { height:calc(100dvh - 6rem); }
+.map-container { height:calc(100dvh - 5rem); width:100%; }
 .leaflet-control-attribution { display:none !important; }
-.legend-btn { position:absolute; top:0.5rem; right:0.5rem; z-index:1000; }
-.legend-panel { position:absolute; top:2.5rem; right:0.5rem; background:#fff; padding:0.5rem; z-index:1000; max-width:200px; }
+.leaflet-control-zoom { display:none; }
+.legend-btn { position:absolute; top:0.5rem; right:0.5rem; z-index:1000; background:#4b3b2b; color:#fff; border:none; border-radius:4px; padding:0.25rem 0.5rem; }
+.legend-panel { position:absolute; top:2.5rem; right:0.5rem; background:rgba(255,255,255,0.85); padding:0.5rem; z-index:1000; max-width:200px; border-radius:4px; }
 .legend-panel label { display:block; }
 .legend-panel .search { width:100%; margin-bottom:0.5rem; }

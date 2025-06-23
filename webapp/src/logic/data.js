@@ -32,11 +32,14 @@ export async function createGroup(name, nickname) {
 }
 
 export async function joinGroup(code, nickname) {
-  await fetch(`${API_URL}/groups/join`, {
+  const r = await fetch(`${API_URL}/groups/join`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ code, nickname }),
   });
+  if (!r.ok) {
+    throw new Error('Code invalide');
+  }
 }
 
 export async function leaveGroup(code, nickname) {

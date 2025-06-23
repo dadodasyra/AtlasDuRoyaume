@@ -43,10 +43,14 @@ export default function SettingsView() {
       setError('Code invalide');
       return;
     }
-    await joinGroup(joinCode, nickname);
-    setJoinCode('');
-    fetchGroups(nickname).then(setGroups);
-    setError('');
+    try {
+      await joinGroup(joinCode, nickname);
+      setJoinCode('');
+      fetchGroups(nickname).then(setGroups);
+      setError('');
+    } catch (e) {
+      setError('Code introuvable');
+    }
   };
 
   const leave = async (code) => {

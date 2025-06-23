@@ -40,6 +40,15 @@ export default function MapView() {
     }
   };
 
+  const lowerQuery = query.toLowerCase();
+  const filteredLayers = mapData
+    ? mapData.layers.filter(
+        (l) =>
+          l.name.toLowerCase().includes(lowerQuery) ||
+          l.features.some((f) => f.name.toLowerCase().includes(lowerQuery))
+      )
+    : [];
+
   return (
     <div className="map-container">
       {mapData ? (
@@ -48,13 +57,17 @@ export default function MapView() {
             center={center}
             zoom={18}
             maxZoom={22}
-            style={{ height: '100%' }}
+            zoomControl={false}
+            style={{ height: '100%', width: '100%' }}
             whenCreated={(map) => (mapRef.current = map)}
             onmoveend={handleMove}
             attributionControl={false}
           >
-            <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
-            {mapData.layers.map((l) =>
+            <TileLayer
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+              maxNativeZoom={19}
+            />
+            {filteredLayers.map((l) =>
               visible[l.id]
                 ? l.features
                     .filter((f) => f.name.toLowerCase().includes(query.toLowerCase()))
@@ -73,7 +86,7 @@ export default function MapView() {
             )}
           </MapContainer>
           <button className="legend-btn" onClick={() => setShowLegend(!showLegend)}>
-            Légende
+            🗺️
           </button>
           {showLegend && (
             <div className="legend-panel">
@@ -83,7 +96,7 @@ export default function MapView() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />
-              {mapData.layers.map((l) => (
+              {filteredLayers.map((l) => (
                 <label key={l.id}>
                   <input
                     type="checkbox"
