@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "layers": [
+    {
+      "id": "villages",
+      "name": "Villages",
+      "color": "blue",
+      "features": [
+        {"name": "Village Central", "lat": 48.8584, "lng": 2.2945}
+      ]
+    },
+    {
+      "id": "forets",
+      "name": "Forêts",
+      "color": "green",
+      "features": [
+        {"name": "La Grande Forêt", "lat": 48.8590, "lng": 2.2960}
+      ]
+    }
+  ]
+}

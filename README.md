@@ -1,7 +1,12 @@
-# Tauri + React
+# Atlas du Royaume
 
-This template should help get you started developing with Tauri and React in Vite.
+Cette application Tauri/React affiche une carte interactive du Rallye nationale.
+Les données de la carte sont chargées depuis `public/mapdata.json` et mises en cache avec un numéro de version.
+Une page de paramètres permet de gérer un pseudo, la sélection d'une troupe et la création ou l'adhésion à des groupes de partage.
 
-## Recommended IDE Setup
+## Lancer en développement
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+```bash
+npm install
+npm run tauri dev
+```

@@ -114,3 +114,12 @@ button {
     background-color: #0f0f0f69;
   }
 }
+
+.navbar {
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem;
+  background: #eee;
+  position: sticky;
+  top: 0;
+}
