@@ -22,7 +22,32 @@ export async function fetchTroops() {
   return await r.json();
 }
 
-export async function generateCode() {
-  const r = await fetch(`${API_URL}/group-code`, { method: 'POST' });
-  return await r.text();
+export async function createGroup(name, nickname) {
+  const r = await fetch(`${API_URL}/groups`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, nickname }),
+  });
+  return await r.json();
+}
+
+export async function joinGroup(code, nickname) {
+  await fetch(`${API_URL}/groups/join`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code, nickname }),
+  });
+}
+
+export async function leaveGroup(code, nickname) {
+  await fetch(`${API_URL}/groups/leave`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code, nickname }),
+  });
+}
+
+export async function fetchGroups(nickname) {
+  const r = await fetch(`${API_URL}/groups/${encodeURIComponent(nickname)}`);
+  return await r.json();
 }

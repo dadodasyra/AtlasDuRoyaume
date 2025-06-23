@@ -1,33 +1,41 @@
 import { useState, useEffect } from 'react';
-import { fetchTroops, generateCode } from '../logic/data';
+import { fetchTroops, createGroup, joinGroup, fetchGroups, leaveGroup } from '../logic/data';
 
 export default function SettingsView() {
   const [nickname, setNickname] = useState(localStorage.getItem('nickname') || '');
   const [troops, setTroops] = useState([]);
   const [troopId, setTroopId] = useState(localStorage.getItem('troopId') || '');
-  const [groups, setGroups] = useState(() => JSON.parse(localStorage.getItem('groups') || '[]'));
+  const [groups, setGroups] = useState([]);
+  const [newGroup, setNewGroup] = useState('');
+  const [joinCode, setJoinCode] = useState('');
 
   useEffect(() => {
     fetchTroops().then(setTroops);
-  }, []);
+    if (nickname) fetchGroups(nickname).then(setGroups);
+  }, [nickname]);
 
   const saveProfile = () => {
     localStorage.setItem('nickname', nickname);
     localStorage.setItem('troopId', troopId);
   };
 
-  const createGroup = async (name) => {
-    const code = await generateCode();
-    const newGroup = { name, code };
-    const list = [...groups, newGroup];
-    setGroups(list);
-    localStorage.setItem('groups', JSON.stringify(list));
+  const createGroupHandler = async () => {
+    if (!newGroup || !nickname) return;
+    const g = await createGroup(newGroup, nickname);
+    setGroups([...groups, g]);
+    setNewGroup('');
   };
 
-  const leaveGroup = (code) => {
-    const list = groups.filter((g) => g.code !== code);
-    setGroups(list);
-    localStorage.setItem('groups', JSON.stringify(list));
+  const joinGroupHandler = async () => {
+    if (!joinCode || !nickname) return;
+    await joinGroup(joinCode, nickname);
+    setJoinCode('');
+    fetchGroups(nickname).then(setGroups);
+  };
+
+  const leave = async (code) => {
+    await leaveGroup(code, nickname);
+    setGroups(groups.filter((g) => g.code !== code));
   };
 
   return (
@@ -43,10 +51,17 @@ export default function SettingsView() {
       <button onClick={saveProfile}>Enregistrer</button>
 
       <h2>Groupes</h2>
-      <button onClick={() => createGroup('Nouveau groupe')}>Créer un groupe</button>
+      <div className="group-actions">
+        <input placeholder="Nom du groupe" value={newGroup} onChange={(e) => setNewGroup(e.target.value)} />
+        <button onClick={createGroupHandler}>Créer</button>
+      </div>
+      <div className="group-actions">
+        <input placeholder="Code" value={joinCode} onChange={(e) => setJoinCode(e.target.value)} />
+        <button onClick={joinGroupHandler}>Rejoindre</button>
+      </div>
       <ul>
         {groups.map((g) => (
-          <li key={g.code}>{g.name} - {g.code} <button onClick={() => leaveGroup(g.code)}>Quitter</button></li>
+          <li key={g.code}>{g.name} - {g.code} <button onClick={() => leave(g.code)}>Quitter</button></li>
         ))}
       </ul>
     </div>

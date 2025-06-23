@@ -11,16 +11,19 @@ function App() {
     <BrowserRouter>
       <header className="header">
         <h1>Rallye nationale</h1>
-        <nav>
-          <Link to="/">Carte</Link> | <Link to="/settings">Param\u00E8tres</Link>
-        </nav>
       </header>
-      <ErrorBoundary>
-        <Routes>
-          <Route path="/" element={<MapView />} />
-          <Route path="/settings" element={<SettingsView />} />
-        </Routes>
-      </ErrorBoundary>
+      <div className="content">
+        <ErrorBoundary>
+          <Routes>
+            <Route path="/" element={<MapView />} />
+            <Route path="/settings" element={<SettingsView />} />
+          </Routes>
+        </ErrorBoundary>
+      </div>
+      <nav className="nav-bottom">
+        <Link to="/">Carte</Link>
+        <Link to="/settings">Paramètres</Link>
+      </nav>
     </BrowserRouter>
   );
 }
