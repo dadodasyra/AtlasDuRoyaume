@@ -1,9 +1,72 @@
 use actix_web::{web, App, HttpServer, HttpResponse};
+use actix_cors::Cors;
 use rand::{distributions::Alphanumeric, Rng};
 use serde::{Serialize, Deserialize};
 use std::sync::Mutex;
 use std::collections::HashMap;
 use lazy_static::lazy_static;
+
+#[derive(Serialize, Clone)]
+struct Group {
+    name: String,
+    code: String,
+}
+
+#[derive(Deserialize)]
+struct CreateGroupReq {
+    name: String,
+    nickname: String,
+}
+
+#[derive(Deserialize)]
+struct CodeReq {
+    code: String,
+    nickname: String,
+}
+
+#[derive(Serialize)]
+struct Feature {
+    id: u32,
+    name: String,
+    lat: f64,
+    lng: f64,
+}
+
+#[derive(Serialize)]
+struct Layer {
+    id: u32,
+    name: String,
+    center: (f64, f64),
+    features: Vec<Feature>,
+}
+
+#[derive(Serialize)]
+struct MapData {
+    version: u32,
+    layers: Vec<Layer>,
+}
+
+#[derive(Serialize)]
+struct Troop {
+    id: u32,
+    name: String,
+}
+
+lazy_static! {
+    static ref GROUPS: Mutex<Vec<Group>> = Mutex::new(Vec::new());
+    static ref USER_GROUPS: Mutex<HashMap<String, Vec<String>>> = Mutex::new(HashMap::new());
+}
+
+fn generate_code() -> String {
+    rand::thread_rng()
+        .sample_iter(&Alphanumeric)
+        .take(6)
+        .map(char::from)
+        .collect::<String>()
+        .to_uppercase()
+}
+
+async fn map_data() -> HttpResponse {
     let layers = vec![
         Layer {
             id: 1,
@@ -25,25 +88,6 @@ use lazy_static::lazy_static;
         },
     ];
     HttpResponse::Ok().json(MapData { version: 1, layers })
-
-#[derive(Serialize)]
-#[derive(Serialize, Clone)]
-struct Group { name: String, code: String }
-
-#[derive(Deserialize)]
-struct CreateGroupReq { name: String, nickname: String }
-
-#[derive(Deserialize)]
-struct CodeReq { code: String, nickname: String }
-
-lazy_static! {
-    static ref GROUPS: Mutex<Vec<Group>> = Mutex::new(Vec::new());
-    static ref USER_GROUPS: Mutex<HashMap<String, Vec<String>>> = Mutex::new(HashMap::new());
-}
-
-fn generate_code() -> String {
-    rand::thread_rng()
-        .to_uppercase()
 }
 
 async fn create_group(req: web::Json<CreateGroupReq>) -> HttpResponse {
@@ -95,19 +139,7 @@ async fn list_groups(nick: web::Path<String>) -> HttpResponse {
         .cloned()
         .collect();
     HttpResponse::Ok().json(result)
-            .route("/groups", web::post().to(create_group))
-            .route("/groups/join", web::post().to(join_group))
-            .route("/groups/leave", web::post().to(leave_group))
-            .route("/groups/{nick}", web::get().to(list_groups))
-        name: "Campement".into(),
-        center: (45.0, 5.0),
-        features: vec![Feature { id: 1, name: "Entrée".into(), lat: 45.0, lng: 5.0 }],
-    };
-    HttpResponse::Ok().json(MapData { version: 1, layers: vec![layer] })
 }
-
-#[derive(Serialize)]
-struct Troop { id: u32, name: String }
 
 async fn troops() -> HttpResponse {
     HttpResponse::Ok().json(vec![Troop { id: 1, name: "Louveteaux".into() }])
@@ -136,6 +168,10 @@ async fn main() -> std::io::Result<()> {
             .route("/map-data", web::get().to(map_data))
             .route("/troops", web::get().to(troops))
             .route("/group-code", web::post().to(create_code))
+            .route("/groups", web::post().to(create_group))
+            .route("/groups/join", web::post().to(join_group))
+            .route("/groups/leave", web::post().to(leave_group))
+            .route("/groups/{nick}", web::get().to(list_groups))
     })
     .bind(("127.0.0.1", 8000))?
     .run()
