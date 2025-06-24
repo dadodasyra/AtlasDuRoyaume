@@ -13,6 +13,25 @@ export default function MapView() {
   const [showLegend, setShowLegend] = useState(false);
   const [query, setQuery] = useState('');
   const mapRef = useRef(null);
+  const recenter = async () => {
+    try {
+      if (window.__TAURI__) {
+        const { getCurrentPosition } = await import('@tauri-apps/plugin-geolocation');
+        const pos = await getCurrentPosition();
+        const coord = [pos.coords.latitude, pos.coords.longitude];
+        mapRef.current.setView(coord);
+        setCenter(coord);
+      } else if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(({ coords }) => {
+          const coord = [coords.latitude, coords.longitude];
+          mapRef.current.setView(coord);
+          setCenter(coord);
+        });
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   useEffect(() => {
     if (mapRef.current) {
@@ -78,7 +97,7 @@ export default function MapView() {
               maxNativeZoom={19}
               maxZoom={19}
             />
-            <ScaleControl position="bottomleft" />
+            <ScaleControl position="bottomleft" imperial={false} />
             {filteredLayers.map((l) =>
               visible[l.id]
                 ? l.features
@@ -100,6 +119,7 @@ export default function MapView() {
           <button className="legend-btn" onClick={() => setShowLegend(!showLegend)}>
             🗺️
           </button>
+          <button className="locate-btn" onClick={recenter}>📍</button>
           {showLegend && (
             <div className="legend-panel">
               <input
@@ -109,14 +129,14 @@ export default function MapView() {
                 onChange={(e) => setQuery(e.target.value)}
               />
               {filteredLayers.map((l) => (
-                <label key={l.id}>
-                  <input
-                    type="checkbox"
-                    checked={visible[l.id]}
-                    onChange={() => toggleLayer(l.id)}
-                  />
-                  {l.name}
-                </label>
+                <div
+                  key={l.id}
+                  className={visible[l.id] ? 'legend-item' : 'legend-item disabled'}
+                  onClick={() => toggleLayer(l.id)}
+                >
+                  <span className="legend-icon">{l.icon}</span>
+                  <span>{l.name}</span>
+                </div>
               ))}
             </div>
           )}

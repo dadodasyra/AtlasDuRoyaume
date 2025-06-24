@@ -4,6 +4,8 @@ Ce dépôt contient une application Tauri 2 avec un frontend React et un backend
 
 Pour compiler le frontend, voir `webapp/README.md`.
 
+La géolocalisation utilise le plugin Tauri `@tauri-apps/plugin-geolocation`.
+
 ## Lancer l'application
 
 1. Démarrer l'API REST locale :

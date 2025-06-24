@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchTroops, createGroup, joinGroup, fetchGroups, leaveGroup } from '../logic/data';
+import { fetchTroops, createGroup, joinGroup, fetchGroups, leaveGroup, registerUser } from '../logic/data';
 
 const capitalize = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
 
@@ -23,6 +23,7 @@ export default function SettingsView() {
     localStorage.setItem('nickname', capped);
     localStorage.setItem('troopId', troopId);
     if (capped) {
+      registerUser(capped);
       fetchGroups(capped).then(setGroups);
     }
   };

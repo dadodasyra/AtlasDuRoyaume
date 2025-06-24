@@ -1,28 +1,68 @@
-use actix_cors::Cors;
-use actix_web::{web, App, HttpServer, HttpResponse};
-use rand::{distributions::Alphanumeric, Rng};
-use serde::{Serialize, Deserialize};
-use std::sync::Mutex;
-use std::collections::HashMap;
-use lazy_static::lazy_static;
-
-#[derive(Serialize)]
-struct Feature {
+use std::fs;
+#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone)]
+struct Layer {
     id: u32,
     name: String,
-    lat: f64,
-    lng: f64,
-    path: Option<Vec<(f64, f64)>>,
+    icon: String,
+    center: (f64, f64),
+    features: Vec<Feature>,
+}
+#[derive(Serialize, Deserialize, Default)]
+struct Data {
+    groups: Vec<Group>,
+    user_groups: HashMap<String, Vec<String>>, // nickname -> codes
 }
 
-#[derive(Serialize)]
-struct Layer { id: u32, name: String, center: (f64, f64), features: Vec<Feature> }
+fn load_data() -> Data {
+    if let Ok(contents) = fs::read_to_string("data.json") {
+        if let Ok(d) = serde_json::from_str::<Data>(&contents) {
+            return d;
+        }
+    }
+    Data::default()
+}
 
-#[derive(Serialize)]
-struct MapData { version: u32, layers: Vec<Layer> }
+fn save_data(data: &Data) {
+    if let Ok(json) = serde_json::to_string(data) {
+        let _ = fs::write("data.json", json);
+    }
+}
 
-async fn map_data() -> HttpResponse {
-    let layers = vec![
+            icon: "🏦".into(),
+            icon: "⛺".into(),
+            icon: "🏥".into(),
+#[derive(Serialize, Deserialize, Clone)]
+#[derive(Deserialize)]
+struct NickReq { nickname: String }
+
+    static ref DATA: Mutex<Data> = Mutex::new(load_data());
+    let mut data = DATA.lock().unwrap();
+    data.groups.push(group.clone());
+    data.user_groups
+    save_data(&data);
+    let mut data = DATA.lock().unwrap();
+    if data.groups.iter().any(|g| g.code == req.code) {
+        data
+            .user_groups
+        save_data(&data);
+
+async fn register_user(req: web::Json<NickReq>) -> HttpResponse {
+    let mut data = DATA.lock().unwrap();
+    data.user_groups.entry(req.nickname.clone()).or_default();
+    save_data(&data);
+    HttpResponse::Ok().finish()
+}
+
+    let mut data = DATA.lock().unwrap();
+    if let Some(list) = data.user_groups.get_mut(&req.nickname) {
+    save_data(&data);
+
+    let data = DATA.lock().unwrap();
+    let codes = data.user_groups.get(&nick).cloned().unwrap_or_default();
+    let result: Vec<Group> = data
+        .groups
+            .route("/users", web::post().to(register_user))
         Layer {
             id: 1,
             name: "économats".into(),

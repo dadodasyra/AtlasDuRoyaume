@@ -54,3 +54,11 @@ export async function fetchGroups(nickname) {
   const r = await fetch(`${API_URL}/groups/${encodeURIComponent(nickname)}`);
   return await r.json();
 }
+
+export async function registerUser(nickname) {
+  await fetch(`${API_URL}/users`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nickname }),
+  });
+}
