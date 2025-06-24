@@ -32,7 +32,6 @@
     "plugins": {
       "sql": {
         "default": "sqlite:app.db"
-      },
-      "geolocation": {}
+      }
     }
 }
