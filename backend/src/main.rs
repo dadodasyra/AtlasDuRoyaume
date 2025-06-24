@@ -91,7 +91,41 @@ async fn map_data() -> HttpResponse {
 struct Troop { id: u32, name: String }
 
 async fn troops() -> HttpResponse {
-    HttpResponse::Ok().json(vec![Troop { id: 1, name: "Louveteaux".into() }])
+    let troop_names = vec![
+        "Amis", "Équipe Nationale", "Autres",
+        "Amnéville", "Barr", "Bischwiller-Stattmatten", "Carpentras", "Clermont", "Colmar",
+        "Crest", "Franconville", "Hurepoix", "Istres", "Lingolsheim", "Lille", "Marne-et-Morin", "Meulan",
+        "Montpellier", "Mulhouse", "Nancy", "Nice", "Pau", "Pontarlier", "Rezé", "Rochefort", "Selestat",
+        "Sarrebourg", "Soultz-Woerth", "St-Nazaire", "St-Maur", "Strasbourg", "Vendenheim", "Vichy",
+        "Wissenbourg-Geissberg", "Wittenheim",
+        "Pionniers EST", "Pionniers IDF", "Pionniers Auvergne"
+    ];
+
+    let mut troops = Vec::new();
+    let mut seen = std::collections::HashSet::new();
+
+    for city in troop_names {
+        if city.to_lowercase().starts_with("Pionniers") {
+            troops.push(Troop {
+                id: troops.len() as u32 + 1,
+                name: city.to_string(),
+            });
+        } else {
+            if !seen.contains(&city) {
+                troops.push(Troop {
+                    id: troops.len() as u32 + 1,
+                    name: format!("PF {}", city),
+                });
+                troops.push(Troop {
+                    id: troops.len() as u32 + 1,
+                    name: format!("FLBX {}", city),
+                });
+                seen.insert(city);
+            }
+        }
+    }
+
+    HttpResponse::Ok().json(troops)
 }
 
 #[derive(Serialize, Deserialize, Clone)]
