@@ -1,0 +1,19 @@
+{
+  "name": "atlasduroyaume-backend",
+  "version": "1.0.0",
+  "description": "Backend of AtlasDuRoyaume tauri project",
+  "license": "ISC",
+  "author": "dadodasyra",
+  "type": "commonjs",
+  "main": "backend.js",
+  "scripts": {
+    "start": "node backend.js",
+    "dev": "nodemon backend.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "randomstring": "^1.3.1",
+    "uuid": "^11.1.0"
+  }
+}
