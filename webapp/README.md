@@ -1,12 +1,7 @@
 # Webapp
 
-Application Tauri 2 avec React pour l\'événement "Rallye nationale". Le contenu de l\'interface est en français.
+Application Tauri 2 avec React pour l\'événement "Rallye nationale".
 
-## Prérequis
-
-```bash
-sudo apt install libwebkit2gtk-4.1-dev libsoup3.0-dev
-```
 
 ## Scripts
 
