@@ -7,25 +7,25 @@ const DEFAULT_CENTER = [44.5954983075345, 5.0105539538621136];
 
 export default function MapView() {
   const [mapData, setMapData] = useState(null);
-  const [center, setCenter] = useState(() => JSON.parse(localStorage.getItem('mapCenter') || JSON.stringify(DEFAULT_CENTER)));
+  const [center, setCenter] = useState(() => JSON.parse(localStorage.getItem('mapCenter') || JSON.stringify(DEFAULT_CENTER))); //TODO set mapCenter and mapZoom in localstorage
   const [zoom, setZoom] = useState(() => Number(localStorage.getItem('mapZoom') || 18));
   const [visible, setVisible] = useState({});
   const [showLegend, setShowLegend] = useState(false);
   const [query, setQuery] = useState('');
   const [error, setError] = useState('');
-  const mapRef = useRef(null);
+  const [map, setMap] = useState(null);
   const recenter = async () => {
     try {
-      if (window.__TAURI__) {
+      if (window.__TAURI__) { //Check if android/IOS TODO: Check if working
         const { getCurrentPosition } = await import('@tauri-apps/plugin-geolocation');
         const pos = await getCurrentPosition();
         const coord = [pos.coords.latitude, pos.coords.longitude];
-        mapRef.current.setView(coord);
+        map.setView(coord);
         setCenter(coord);
       } else if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(({ coords }) => {
           const coord = [coords.latitude, coords.longitude];
-          mapRef.current.setView(coord);
+          map.setView(coord);
           setCenter(coord);
         });
       }
@@ -35,8 +35,8 @@ export default function MapView() {
   };
 
   useEffect(() => {
-    if (mapRef.current) {
-      mapRef.current.invalidateSize();
+    if (map) {
+      map.invalidateSize();
     }
   }, [showLegend]);
 
@@ -67,18 +67,6 @@ export default function MapView() {
     localStorage.setItem('visibleLayers', JSON.stringify(v));
   };
 
-  const handleMove = () => {
-    if (mapRef.current) {
-      const c = mapRef.current.getCenter();
-      const coord = [c.lat, c.lng];
-      setCenter(coord);
-      localStorage.setItem('mapCenter', JSON.stringify(coord));
-      const z = mapRef.current.getZoom();
-      setZoom(z);
-      localStorage.setItem('mapZoom', String(z));
-    }
-  };
-
   const lowerQuery = query.toLowerCase();
   const filteredLayers = mapData
     ? mapData.layers.filter(
@@ -95,17 +83,15 @@ export default function MapView() {
           <MapContainer
             center={center}
             zoom={zoom}
-            maxZoom={19}
-            zoomControl={false}
+            zoomControl={false} //We don't need any zoom control buttons
+            attributionControl={false} //Disables leaflet watermark
             style={{ height: '100%', width: '100%' }}
-            whenCreated={(map) => (mapRef.current = map)}
-            onmoveend={handleMove}
-            attributionControl={false}
+            ref={setMap}
           >
             <TileLayer
               url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
               maxNativeZoom={19}
-              maxZoom={19}
+              maxZoom={21} // Maybe 20 is better (10m scale, currently 5m)
             />
             <ScaleControl position="bottomleft" imperial={false} />
             {filteredLayers.map((l) =>
@@ -126,9 +112,7 @@ export default function MapView() {
                 : null
             )}
           </MapContainer>
-          <button className="legend-btn" onClick={() => setShowLegend(!showLegend)}>
-            🗺️
-          </button>
+          <button className="legend-btn" onClick={() => setShowLegend(!showLegend)}>🗺️</button>
           <button className="locate-btn" onClick={recenter}>📍</button>
           {showLegend && (
             <div className="legend-panel">
