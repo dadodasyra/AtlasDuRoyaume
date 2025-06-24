@@ -60,31 +60,35 @@ export default function SettingsView() {
 
   return (
     <div className="settings">
-      <h2>Profil utilisateur</h2>
-      <input placeholder="Surnom" value={nickname} onChange={(e) => setNickname(e.target.value)} />
-      <select value={troopId} onChange={(e) => setTroopId(e.target.value)}>
-        <option value="">Choisir une troupe</option>
-        {troops.map((t) => (
-          <option key={t.id} value={t.id}>{t.name}</option>
-        ))}
-      </select>
-      <button onClick={saveProfile}>Enregistrer</button>
+      <div className="settings-card">
+        <h2>Profil utilisateur</h2>
+        <input placeholder="Surnom" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+        <select value={troopId} onChange={(e) => setTroopId(e.target.value)}>
+          <option value="">Choisir une troupe</option>
+          {troops.map((t) => (
+            <option key={t.id} value={t.id}>{t.name}</option>
+          ))}
+        </select>
+        <button onClick={saveProfile}>Enregistrer</button>
+      </div>
 
-      <h2>Groupes</h2>
-      {error && <p className="error">{error}</p>}
-      <div className="group-actions">
-        <input placeholder="Nom du groupe" value={newGroup} onChange={(e) => setNewGroup(capitalize(e.target.value))} />
-        <button onClick={createGroupHandler}>Créer</button>
+      <div className="settings-card">
+        <h2>Groupes</h2>
+        {error && <p className="error">{error}</p>}
+        <div className="group-actions">
+          <input placeholder="Nom du groupe" value={newGroup} onChange={(e) => setNewGroup(capitalize(e.target.value))} />
+          <button onClick={createGroupHandler}>Créer</button>
+        </div>
+        <div className="group-actions">
+          <input placeholder="Code" value={joinCode} onChange={(e) => setJoinCode(e.target.value.toUpperCase())} />
+          <button onClick={joinGroupHandler}>Rejoindre</button>
+        </div>
+        <ul>
+          {groups.map((g) => (
+            <li key={g.code}>{g.name} - {g.code} <button onClick={() => leave(g.code)}>Quitter</button></li>
+          ))}
+        </ul>
       </div>
-      <div className="group-actions">
-        <input placeholder="Code" value={joinCode} onChange={(e) => setJoinCode(e.target.value.toUpperCase())} />
-        <button onClick={joinGroupHandler}>Rejoindre</button>
-      </div>
-      <ul>
-        {groups.map((g) => (
-          <li key={g.code}>{g.name} - {g.code} <button onClick={() => leave(g.code)}>Quitter</button></li>
-        ))}
-      </ul>
     </div>
   );
 }

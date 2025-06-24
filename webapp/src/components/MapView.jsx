@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Popup, Polygon } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polygon, ScaleControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useState, useRef } from 'react';
 import { getVersionedData } from '../logic/data';
@@ -8,10 +8,17 @@ const DEFAULT_CENTER = [44.5954983075345, 5.0105539538621136];
 export default function MapView() {
   const [mapData, setMapData] = useState(null);
   const [center, setCenter] = useState(() => JSON.parse(localStorage.getItem('mapCenter') || JSON.stringify(DEFAULT_CENTER)));
+  const [zoom, setZoom] = useState(() => Number(localStorage.getItem('mapZoom') || 18));
   const [visible, setVisible] = useState({});
   const [showLegend, setShowLegend] = useState(false);
   const [query, setQuery] = useState('');
   const mapRef = useRef(null);
+
+  useEffect(() => {
+    if (mapRef.current) {
+      mapRef.current.invalidateSize();
+    }
+  }, [showLegend]);
 
   useEffect(() => {
     getVersionedData().then((data) => {
@@ -37,6 +44,9 @@ export default function MapView() {
       const coord = [c.lat, c.lng];
       setCenter(coord);
       localStorage.setItem('mapCenter', JSON.stringify(coord));
+      const z = mapRef.current.getZoom();
+      setZoom(z);
+      localStorage.setItem('mapZoom', String(z));
     }
   };
 
@@ -55,8 +65,8 @@ export default function MapView() {
         <>
           <MapContainer
             center={center}
-            zoom={18}
-            maxZoom={22}
+            zoom={zoom}
+            maxZoom={19}
             zoomControl={false}
             style={{ height: '100%', width: '100%' }}
             whenCreated={(map) => (mapRef.current = map)}
@@ -66,7 +76,9 @@ export default function MapView() {
             <TileLayer
               url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
               maxNativeZoom={19}
+              maxZoom={19}
             />
+            <ScaleControl position="bottomleft" />
             {filteredLayers.map((l) =>
               visible[l.id]
                 ? l.features
