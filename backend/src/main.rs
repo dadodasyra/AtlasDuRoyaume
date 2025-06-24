@@ -113,7 +113,7 @@ lazy_static! {
 fn generate_code() -> String {
     rand::thread_rng()
         .sample_iter(&Alphanumeric)
-        .take(6)
+        .take(5)
         .map(char::from)
         .collect::<String>()
         .to_uppercase()
@@ -143,7 +143,9 @@ async fn join_group(req: web::Json<CodeReq>) -> HttpResponse {
         save_data(&data);
         HttpResponse::Ok().finish()
     } else {
-        HttpResponse::NotFound().finish()
+        HttpResponse::NotFound()
+            .content_type("text/plain")
+            .body(format!("Session with code '{}' not found", req.code))
     }
 }
 
