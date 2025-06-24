@@ -1,11 +1,20 @@
 import {MapContainer, TileLayer, Marker, Popup, Polygon, ScaleControl} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import {useEffect, useState, useRef} from 'react';
+import {useEffect, useState} from 'react';
 import {getVersionedData} from '../logic/data';
 
 const DEFAULT_CENTER = [44.5954983075345, 5.0105539538621136];
+const DEFAULT_TILESET = {
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    subdomains: '[]', //in string because it's parsed by json
+    maxZoom: 19
+}
 
 export default function MapView() {
+    const [tileset, setTileset] = useState(localStorage.getItem('tilesetURL') || DEFAULT_TILESET.url);
+    const [subdomains, setsubdomains] = useState(() => JSON.parse(localStorage.getItem('tilesetSubdomains') || DEFAULT_TILESET.subdomains));
+    const [tilesetMaxZoom, setTilesetMaxZoom] = useState(() => Number(localStorage.getItem('tilesetMaxZoom') || DEFAULT_TILESET.maxZoom));
+
     const [mapData, setMapData] = useState(null);
     const [center, setCenter] = useState(() => JSON.parse(localStorage.getItem('mapCenter') || JSON.stringify(DEFAULT_CENTER))); //TODO set mapCenter and mapZoom in localstorage
     const [zoom, setZoom] = useState(() => Number(localStorage.getItem('mapZoom') || 18));
@@ -14,33 +23,44 @@ export default function MapView() {
     const [query, setQuery] = useState('');
     const [error, setError] = useState('');
     const [map, setMap] = useState(null);
-    const recenter = async () => {
-        try {
-            if (window.__TAURI__) { //Check if android/IOS TODO: Check if working
-                const {getCurrentPosition} = await import('@tauri-apps/plugin-geolocation');
-                const pos = await getCurrentPosition();
-                const coord = [pos.coords.latitude, pos.coords.longitude];
-                map.setView(coord);
-                setCenter(coord);
-            } else if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(({coords}) => {
-                    const coord = [coords.latitude, coords.longitude];
-                    map.setView(coord);
-                    setCenter(coord);
-                });
-            }
-        } catch (e) {
-            console.error(e);
-        }
-    };
+    const [location, setLocation] = useState(null);
+
+    const recenter = async () => map?.setView(location); //TODO location may be null, handle this case
+
+    function onLocationFound(e) {
+        console.log("Location found:", e);
+        setLocation(e.latlng);
+        L.marker(e.latlng).addTo(map).bindPopup("Votre position (" + e.accuracy + "~ m)");
+        L.circle(e.latlng, {radius: e.accuracy, opacity: 0.3}).addTo(map);
+    }
+
+    function onLocationError(e) {
+        console.error("Location error:", e);
+        setError("Erreur de localisation: " + e.message); //TODO: show this error somewhere
+    }
+
+    useEffect(() => { map?.invalidateSize() }, [showLegend]);
 
     useEffect(() => {
-        if (map) {
-            map.invalidateSize();
-        }
-    }, [showLegend]);
+        map?.on('locationfound', onLocationFound);
+        map?.on('locationerror', onLocationError);
+        map?.locate({watch: true, enableHighAccuracy: true}); // Keep watching the location TODO: high accuracy should be a setting
+    }, [map]);
 
     useEffect(() => {
+        const storedTileset = localStorage.getItem('tilesetURL');
+        setTileset(storedTileset || DEFAULT_TILESET.url);
+
+        const storedSubdomains = JSON.parse(localStorage.getItem('tilesetSubdomains') || '[]');
+        setsubdomains(storedSubdomains || DEFAULT_TILESET.subdomains);
+
+        const storedMaxZoom = localStorage.getItem('tilesetMaxZoom');
+        setTilesetMaxZoom(storedMaxZoom ? Number(storedMaxZoom) : DEFAULT_TILESET.maxZoom);
+
+        updateMapLayers();
+    }, []);
+
+    const updateMapLayers = () => {
         getVersionedData().then((data) => {
             setMapData(data);
             const saved = JSON.parse(localStorage.getItem('visibleLayers') || 'null');
@@ -54,12 +74,10 @@ export default function MapView() {
             setError('Erreur lors du chargement des données de la carte. Veuillez réessayer plus tard. ' + err.message);
 
             setTimeout(() => {
-                getVersionedData()
-                    .then((data) => setMapData(data))
-                    .catch((retryErr) => console.error('Retry failed:', retryErr));
+                updateMapLayers();
             }, 5000); // Retry after 5 seconds
         });
-    }, []);
+    }
 
     const toggleLayer = (id) => {
         const v = {...visible, [id]: !visible[id]};
@@ -89,8 +107,9 @@ export default function MapView() {
                         ref={setMap}
                     >
                         <TileLayer
-                            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                            maxNativeZoom={19}
+                            url={tileset}
+                            subdomains={subdomains}
+                            maxNativeZoom={tilesetMaxZoom}//IGN map is bad after 18
                             maxZoom={21} // Maybe 20 is better (10m scale, currently 5m)
                         />
                         <ScaleControl position="bottomleft" imperial={false}/>

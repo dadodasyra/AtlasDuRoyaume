@@ -1,9 +1,16 @@
 import {useState, useEffect} from 'react';
 import {fetchTroops, createGroup, joinGroup, fetchGroups, leaveGroup, registerUser} from '../logic/data';
 
+const TILESETS = [
+    {name: '⭐Esri Satellite', url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', maxZoom: 19},
+    {name: 'Google Satellite', url: 'https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', subdomains: ['mt0', 'mt1', 'mt2', 'mt3'], maxZoom: 21},
+    {name: 'Géoportail Satellite', url: 'https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX={z}&TILECOL={x}&TILEROW={y}', maxZoom: 19}, //same provider as mapbox
+    {name: 'Géoportail IGN', url: 'https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&FORMAT=image/png&TILEMATRIXSET=PM&TILEMATRIX={z}&TILECOL={x}&TILEROW={y}', maxZoom: 18},
+];
 const capitalize = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
 
 export default function SettingsView() {
+    const [selectedTileset, setSelectedTileset] = useState(localStorage.getItem('tilesetURL') || TILESETS[0].url);
     const [nickname, setNickname] = useState(localStorage.getItem('nickname') || '');
     const [troops, setTroops] = useState([]);
     const [troopId, setTroopId] = useState(localStorage.getItem('troopId') || '');
@@ -66,6 +73,13 @@ export default function SettingsView() {
         setGroups(groups.filter((g) => g.code !== code));
     };
 
+    const saveTileset = (url) => {
+        const selected = TILESETS.find((tileset) => tileset.url === url);
+        setSelectedTileset(url);
+        localStorage.setItem('tilesetURL', url);
+        localStorage.setItem('tilesetSubdomains', JSON.stringify(selected.subdomains || []));
+        localStorage.setItem('tilesetMaxZoom', selected.maxZoom || 19);
+    };
     return (
         <div className="settings">
             <div className="settings-card">
@@ -100,6 +114,17 @@ export default function SettingsView() {
                         </li>
                     ))}
                 </ul>
+            </div>
+
+            <div className="settings-card">
+                <h2>Carte</h2>
+                <select value={selectedTileset} onChange={(e) => saveTileset(e.target.value)}>
+                    {TILESETS.map((tileset) => (
+                        <option key={tileset.name} value={tileset.url}>
+                            {tileset.name}
+                        </option>
+                    ))}
+                </select>
             </div>
         </div>
     );
