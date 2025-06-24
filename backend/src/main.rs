@@ -5,6 +5,7 @@ use std::sync::Mutex;
 use std::collections::HashMap;
 use std::fs;
 use lazy_static::lazy_static;
+use actix_cors::Cors;
 
 #[derive(Serialize, Deserialize, Clone)]
 struct Feature {
@@ -178,7 +179,13 @@ async fn list_groups(nick: web::Path<String>) -> HttpResponse {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
+        let cors = Cors::default()
+            .allow_any_origin()
+            .allow_any_method()
+            .allow_any_header();
+
         App::new()
+            .wrap(cors)
             .route("/map-data", web::get().to(map_data))
             .route("/troops", web::get().to(troops))
             .route("/groups", web::post().to(create_group))
