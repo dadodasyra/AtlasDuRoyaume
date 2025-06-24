@@ -182,3 +182,8 @@ body, html, #root {
 .loading-icon {
     margin-top: 1rem
 }
+
+.noselect {
+    -webkit-user-select: none;
+    user-select: none;
+}

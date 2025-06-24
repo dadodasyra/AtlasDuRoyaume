@@ -9,11 +9,11 @@ import './App.css';
 function App() {
     return (
         <BrowserRouter>
-            <header className="header">
+            <header className="header noselect">
                 <img src="/logo.png" alt="logo" className="logo"/>
                 <h1>Atlas du Royaume</h1>
             </header>
-            <div className="content">
+            <div className="content noselect">
                 <ErrorBoundary>
                     <Routes>
                         <Route path="/" element={<MapView/>}/>
@@ -21,7 +21,7 @@ function App() {
                     </Routes>
                 </ErrorBoundary>
             </div>
-            <nav className="nav-bottom">
+            <nav className="nav-bottom noselect">
                 <Link to="/">Carte</Link>
                 <Link to="/settings">Paramètres</Link>
             </nav>
