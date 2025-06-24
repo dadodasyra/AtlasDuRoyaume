@@ -42,9 +42,26 @@ export default function MapView() {
     useEffect(() => { map?.invalidateSize() }, [showLegend]);
 
     useEffect(() => {
-        map?.on('locationfound', onLocationFound);
-        map?.on('locationerror', onLocationError);
-        map?.locate({watch: true, enableHighAccuracy: true}); // Keep watching the location TODO: high accuracy should be a setting
+        if (!map) return;
+        const saveMapState = () => {
+            const mapCenter = map.getCenter();
+            localStorage.setItem('mapCenter', JSON.stringify({ lat: mapCenter.lat, lng: mapCenter.lng }));
+            localStorage.setItem('mapZoom', map.getZoom());
+        };
+
+        map.on('moveend', saveMapState); //TODO: we should only save move and zoom when users closes the map, not every time they move or zoom
+        map.on('zoomend', saveMapState);
+        map.on('locationfound', onLocationFound);
+        map.on('locationerror', onLocationError);
+        map.locate({watch: true, enableHighAccuracy: true}); // Keep watching the location TODO: high accuracy should be a setting
+
+        return () => {
+            map.off('moveend', saveMapState);
+            map.off('zoomend', saveMapState);
+            map.off('locationfound', onLocationFound);
+            map.off('locationerror', onLocationError);
+            map.stopLocate(); // Stop watching the location
+        }
     }, [map]);
 
     useEffect(() => {
