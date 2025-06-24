@@ -1,7 +1,11 @@
 const API_URL = 'http://localhost:8000';
 
 export async function fetchMapData() {
-  const r = await fetch(`${API_URL}/map-data`);
+  const r = await fetch(`${API_URL}/map-data`)
+      .catch((err) => {
+        console.error('Network error:', err);
+        throw new Error('Erreur de connexion au serveur : ' + err.message);
+      });
   return await r.json();
 }
 
@@ -36,9 +40,17 @@ export async function joinGroup(code, nickname) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ code, nickname }),
+  }).catch((err) => {
+    console.error('Network error:', err);
+    throw new Error('Erreur de connexion au serveur : ' + err.message);
   });
+
   if (!r.ok) {
-    throw new Error('Code invalide');
+    if (r.status === 404) {
+      throw new Error('Code introuvable');
+    } else {
+      throw new Error('Erreur lors de la connexion au serveur : ' + r.statusText);
+    }
   }
 }
 

@@ -12,6 +12,7 @@ export default function MapView() {
   const [visible, setVisible] = useState({});
   const [showLegend, setShowLegend] = useState(false);
   const [query, setQuery] = useState('');
+  const [error, setError] = useState('');
   const mapRef = useRef(null);
   const recenter = async () => {
     try {
@@ -48,6 +49,15 @@ export default function MapView() {
         vis[l.id] = saved ? saved[l.id] !== false : true;
       });
       setVisible(vis);
+    }).catch((err) => {
+      console.error('Erreur lors du chargement des données de la carte:', err);
+      setError('Erreur lors du chargement des données de la carte. Veuillez réessayer plus tard. ' + err.message);
+
+      setTimeout(() => {
+        getVersionedData()
+            .then((data) => setMapData(data))
+            .catch((retryErr) => console.error('Retry failed:', retryErr));
+      }, 5000); // Retry after 5 seconds
     });
   }, []);
 
@@ -142,7 +152,31 @@ export default function MapView() {
           )}
         </>
       ) : (
-        <p>Chargement...</p>
+          <div className="loading">
+            <p>Chargement de la carte...<br/>Connexion au serveur...<br/><br/>Cela ne devrait pas prendre plus de 5
+              secondes..</p>
+            {error && <p className="error">{error}</p>}
+            <div className="loading-icon">
+              <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 100 100"
+                  width="50"
+                  height="50"
+                  className="spinner"
+              >
+                <circle
+                    cx="50"
+                    cy="50"
+                    r="40"
+                    strokeWidth="10"
+                    stroke="#4b3b2b"
+                    strokeDasharray="200"
+                    strokeDashoffset="100"
+                    fill="none"
+                />
+              </svg>
+            </div>
+          </div>
       )}
     </div>
   );

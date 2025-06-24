@@ -40,17 +40,24 @@ export default function SettingsView() {
   };
 
   const joinGroupHandler = async () => {
-    if (!joinCode || !nickname) {
+    if (!nickname) {
+      setError('Veuillez d\'abord enregistrer votre profil');
+      return;
+    } else if (!joinCode) {
       setError('Code invalide');
       return;
+    } else if (joinCode.length !== 5) {
+      setError('Le code doit comporter 5 caractères');
+      return;
     }
+
     try {
       await joinGroup(joinCode, nickname);
       setJoinCode('');
       fetchGroups(nickname).then(setGroups);
       setError('');
     } catch (e) {
-      setError('Code introuvable');
+      setError(e.message);
     }
   };
 

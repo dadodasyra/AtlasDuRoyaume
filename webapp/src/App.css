@@ -4,7 +4,7 @@ body,html,#root { margin:0; height:100%; display:flex; flex-direction:column; }
 .logo { width:24px; height:24px; }
 .nav-bottom { position:fixed; bottom:0; left:0; right:0; background:#4b3b2b; display:flex; justify-content:space-around; padding:0.5rem 0; height:3rem; }
 .nav-bottom a { color:#f0e6d2; text-decoration:none; font-size:1rem; }
-.content { flex:1; position:relative; }
+.content { flex:1; position:relative; background: #f7f5ee; }
 .error { color: red; }
 .settings { padding:1rem; max-width:600px; margin:0 auto; }
 .settings input,.settings select { width:100%; margin-bottom:0.5rem; padding:0.25rem; }
@@ -21,3 +21,10 @@ body,html,#root { margin:0; height:100%; display:flex; flex-direction:column; }
 .legend-icon { margin-right:0.5rem; }
 .legend-item.disabled span:last-child { color:#888; text-decoration: line-through; }
 .settings-card { background:#f7f5ee; padding:1rem; border-radius:6px; box-shadow:0 0 4px rgba(0,0,0,0.1); }
+.loading { text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100% }
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.spinner { animation: spin 1.5s linear infinite; }
+.loading-icon { margin-top: 1rem}
