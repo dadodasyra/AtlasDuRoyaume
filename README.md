@@ -1,4 +1,5 @@
-![logo.png](webapp/public/logo.png)
+<img src="webapp/public/logo.png" width=50% alt="App logo">
+
 # Atlas Du Royaume
 
 Atlas du Royaume a pour but de rendre facile la navigation et facilité le travail des équipes techniques lors de l'évènement [Rallye Nationale 2025](https://www.flambeaux.org/rallye-2025/) du [Mouvement des Flambeaux et des Claires flammes](https://www.flambeaux.org/).
