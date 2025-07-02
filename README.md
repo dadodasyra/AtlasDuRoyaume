@@ -1,4 +1,4 @@
-<img src="webapp/public/logo.png" width=50% alt="App logo">
+<img src="webapp/public/icons/logo.png" width=50% alt="App logo">
 
 # Atlas Du Royaume
 
@@ -35,8 +35,8 @@ La géolocalisation utilise le plugin Tauri `@tauri-apps/plugin-geolocation`.
 - [ ] Données de la légende à insérer en backend, actuellement dummy data
 - [ ] Meilleure gestion du fond de carte/caching de la map autour du lieu de camp ?
 - [ ] Carte hors ligne (voir faisabilité)
-- [ ] Une interface potable
-- [ ] Une interface mobile friendly
+- [x] Une interface potable
+- [x] Une interface mobile friendly
 
 ## Lancer l'application
 

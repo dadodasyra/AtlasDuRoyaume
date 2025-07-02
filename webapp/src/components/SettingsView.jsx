@@ -86,7 +86,7 @@ export default function SettingsView() {
                 <h2>Profil utilisateur</h2>
                 <input placeholder="Surnom" value={nickname} onChange={(e) => setNickname(e.target.value)}/>
                 <select value={troopId} onChange={(e) => setTroopId(e.target.value)}>
-                    <option value="">Choisir une troupe</option>
+                    <option value="" disabled hidden>Choisir une troupe</option>
                     {troops.map((t) => (
                         <option key={t.id} value={t.id}>{t.name}</option>
                     ))}

@@ -1,3 +1,18 @@
+:root {
+    --primary: #4b3b2b;
+    --primary-hover: #6a543a;
+    --primary-light: #bfa77a;
+    --primary-text: #6c6352;
+    --background: #f7f5ee;
+    --background-alt: #fbefda;
+    --surface: rgba(247, 245, 238, 0.92);
+    --surface-alt: rgba(255, 255, 255, 0.7);
+    --accent: #f0e6d2;
+    --error: red;
+    --disabled: #888;
+    --white: #fff;
+}
+
 body, html, #root {
     margin: 0;
     height: 100%;
@@ -5,10 +20,24 @@ body, html, #root {
     flex-direction: column;
 }
 
+body {
+    /* Path is correct for React public folder, JetBrains warning can be ignored */
+    /*noinspection CssUnknownTarget*/
+    background-image: url('/icons/parchment.webp');
+    background-size: cover;
+    background-repeat: repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+    font-family: 'Georgia', serif;
+}
+
+.header, .nav-bottom {
+    background: var(--primary);
+    color: var(--white);
+}
+
 .header {
-    background: #4b3b2b;
-    color: #fff;
-    padding: 0.5rem;
+    padding: 0.25rem;
     text-align: center;
     display: flex;
     align-items: center;
@@ -22,16 +51,13 @@ body, html, #root {
 }
 
 .logo {
-    width: 24px;
-    height: 24px;
+    width: 40px;
+    height: 40px;
 }
 
 .nav-bottom {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #4b3b2b;
+    bottom: 0; left: 0; right: 0;
     display: flex;
     justify-content: space-around;
     padding: 0.5rem 0;
@@ -39,7 +65,7 @@ body, html, #root {
 }
 
 .nav-bottom a {
-    color: #f0e6d2;
+    color: var(--accent);
     text-decoration: none;
     font-size: 1rem;
 }
@@ -47,12 +73,9 @@ body, html, #root {
 .content {
     flex: 1;
     position: relative;
-    background: #f7f5ee;
 }
 
-.error {
-    color: red;
-}
+.error { color: var(--error); }
 
 .settings {
     padding: 1rem;
@@ -60,14 +83,71 @@ body, html, #root {
     margin: 0 auto;
 }
 
+.settings label {
+    color: var(--primary);
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+    display: block;
+    letter-spacing: 0.02em;
+}
+
 .settings input, .settings select {
+    border: 1px solid var(--primary-light);
+    background: var(--background);
+    color: var(--primary);
     width: 100%;
     margin-bottom: 0.5rem;
-    padding: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    box-sizing: border-box;
+    height: 2.2em;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.settings input::placeholder {
+    color: var(--primary-text);
+    opacity: 1;
+}
+
+.settings input:focus, .settings select:focus {
+    border-color: var(--primary);
+    background: var(--background-alt);
+    outline: none;
 }
 
 .settings button {
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1.2rem;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.07);
     margin-bottom: 0.5rem;
+}
+
+.settings button:hover, .settings button:focus {
+    background: var(--primary-hover);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.settings-card {
+    background-color: var(--surface);
+    padding: 0.9rem 1.7rem;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.13);
+    margin-bottom: 1rem;
+}
+
+.settings h2, .settings h3 {
+    color: var(--primary);
+    margin: 0.5rem 0 0.7rem;
+    font-family: 'Georgia', serif;
+    letter-spacing: 0.01em;
 }
 
 .group-actions {
@@ -76,54 +156,40 @@ body, html, #root {
     gap: 0.5rem;
 }
 
-.map-container {
+.map-container, .settings-container {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
+    top: 0; left: 0; right: 0;
     bottom: 4rem;
 }
+.settings-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-.leaflet-control-attribution {
+.leaflet-control-attribution, .leaflet-control-zoom {
     display: none !important;
 }
 
-.leaflet-control-zoom {
-    display: none;
-}
-
-.legend-btn {
+.legend-btn, .locate-btn {
     position: absolute;
     bottom: 5rem;
-    right: 0.5rem;
     z-index: 1000;
-    background: #4b3b2b;
-    color: #fff;
+    background: var(--primary);
+    color: var(--white);
     border: none;
     border-radius: 4px;
     padding: 0.5rem 0.75rem;
     font-size: 1.2rem;
 }
-
-.locate-btn {
-    position: absolute;
-    bottom: 5rem;
-    left: 0.5rem;
-    z-index: 1000;
-    background: #4b3b2b;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 0.5rem 0.75rem;
-    font-size: 1.2rem;
-}
+.legend-btn { right: 0.5rem; }
+.locate-btn { left: 0.5rem; }
 
 .legend-panel {
     position: absolute;
     bottom: 9rem;
     right: 0.5rem;
-    background: rgba(255, 255, 255, 0.7);
-    padding: 0.5rem;
+    background: var(--surface-alt);
     z-index: 1000;
     max-width: 200px;
     border-radius: 4px;
@@ -141,20 +207,11 @@ body, html, #root {
     margin-bottom: 0.25rem;
 }
 
-.legend-icon {
-    margin-right: 0.5rem;
-}
+.legend-icon { margin-right: 0.5rem; }
 
 .legend-item.disabled span:last-child {
-    color: #888;
+    color: var(--disabled);
     text-decoration: line-through;
-}
-
-.settings-card {
-    background: #f7f5ee;
-    padding: 1rem;
-    border-radius: 6px;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
 }
 
 .loading {
@@ -163,25 +220,20 @@ body, html, #root {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100%
+    padding: 0 5rem;
+    height: 100%;
 }
 
 @keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .spinner {
     animation: spin 1.5s linear infinite;
 }
 
-.loading-icon {
-    margin-top: 1rem
-}
+.loading-icon { margin-top: 1rem; }
 
 .noselect {
     -webkit-user-select: none;

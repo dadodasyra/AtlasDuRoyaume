@@ -25,6 +25,7 @@
     "active": true,
     "targets": "all",
     "icon": [
+      "icons/logo.webp",
       "icons/logo.png",
       "icons/logo.ico"
     ]
